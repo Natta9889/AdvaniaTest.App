@@ -15,7 +15,7 @@ public class ProductTrigger
         _logger = logger;
     }
 
-    [Function("Add-Product")]
+    [Function("addproduct")]
     public async Task<IActionResult> RunAddProduct([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
         try
@@ -32,7 +32,7 @@ public class ProductTrigger
         }
     }
 
-    [Function("Get-Products")]
+    [Function("getproducts")]
     public async Task<IActionResult> RunGetProducts([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
     {
         try
