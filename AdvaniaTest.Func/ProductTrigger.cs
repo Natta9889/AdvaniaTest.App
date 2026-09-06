@@ -10,7 +10,7 @@ public class ProductTrigger
 {
     private readonly ILogger<ProductTrigger> _logger;
 
-    public ProductTrigger(ILogger<ProductTrigger> logger)
+    public ProductTrigger(ILogger<ProductTrigger> logger, IProductRepository repo)
     {
         _logger = logger;
     }
