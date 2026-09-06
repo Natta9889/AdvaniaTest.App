@@ -16,14 +16,14 @@ public class ProductTrigger
     }
 
     [Function("Add-Product")]
-    public IActionResult RunAddProduct([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+    public async Task<IActionResult> RunAddProduct([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
     {
         try
         {
             _logger.LogInformation("POST Add Product Endpoint Triggered.");
-            var product = req.ReadFromJsonAsync<Product>();
+            var product = await req.ReadFromJsonAsync<Product>();
 
-            return new OkObjectResult(product.Result);
+            return new OkObjectResult(product);
         }
         catch (Exception ex)
         {
@@ -33,7 +33,7 @@ public class ProductTrigger
     }
 
     [Function("Get-Products")]
-    public IActionResult RunGetProducts([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+    public async Task<IActionResult> RunGetProducts([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
     {
         try
         {
