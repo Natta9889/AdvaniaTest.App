@@ -1,7 +1,6 @@
 ﻿using AdvaniaTest.Func.Entities;
 using AdvaniaTest.Func.Interfaces;
 using Azure.Data.Tables;
-using System.Net;
 
 namespace AdvaniaTest.Func.Repositories;
 
@@ -20,7 +19,7 @@ public class ProductRepository : IProductRepository
         {
             var exists = await _tableClient.GetEntityIfExistsAsync<ProductEntity>(partitionKey, entity.RowKey);
 
-            if(exists is null)
+            if(exists is not null)
             {
                 return false;
             }
