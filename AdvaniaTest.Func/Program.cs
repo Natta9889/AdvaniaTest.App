@@ -1,10 +1,12 @@
+using AdvaniaTest.Func.Interfaces;
+using AdvaniaTest.Func.Repositories;
+using AdvaniaTest.Func.Services;
+using Azure.Data.Tables;
 using Azure.Monitor.OpenTelemetry.Exporter;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -16,5 +18,19 @@ if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHT
         .UseFunctionsWorkerDefaults()
         .UseAzureMonitorExporter();
 }
+
+builder.Services.AddSingleton(sp =>
+{
+    var connectionString = Environment.GetEnvironmentVariable("StorageAccountConnectionString");
+
+    var tableClient = new TableClient(connectionString, "Product");
+
+    tableClient.CreateIfNotExists();
+
+    return tableClient;
+});
+
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Build().Run();
