@@ -1,3 +1,6 @@
+using AdvaniaTest.Func.Interfaces;
+using AdvaniaTest.Func.Repositories;
+using AdvaniaTest.Func.Services;
 using Azure.Data.Tables;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -26,5 +29,8 @@ builder.Services.AddSingleton(sp =>
 
     return tableClient;
 });
+
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Build().Run();

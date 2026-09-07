@@ -22,15 +22,15 @@ public class ProductRepository : IProductRepository
         {
             var exists = await _tableClient.GetEntityIfExistsAsync<ProductEntity>(partitionKey, entity.RowKey);
 
-            if(exists is not null)
+            if(exists.HasValue is true)
             {
-                _loggar.LogInformation("Product with {id} already exists", entity.RowKey);
+                _loggar.LogInformation("Product with Id : {id} already exists", entity.RowKey);
                 return false;
             }
 
             var added = await _tableClient.AddEntityAsync(entity);
 
-            if (added.Status == 200)
+            if (added.Status == 204)
             {
                 _loggar.LogInformation("Product with {id} added successfully", entity.RowKey);
                 return true;

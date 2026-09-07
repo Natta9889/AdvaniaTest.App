@@ -1,4 +1,5 @@
 using AdvaniaTest.Func.DTOs;
+using AdvaniaTest.Func.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -9,10 +10,12 @@ namespace AdvaniaTest.Func;
 public class ProductTrigger
 {
     private readonly ILogger<ProductTrigger> _logger;
+    private readonly IProductService _service;
 
-    public ProductTrigger(ILogger<ProductTrigger> logger, IProductRepository repo)
+    public ProductTrigger(ILogger<ProductTrigger> logger, IProductService service)
     {
         _logger = logger;
+        _service = service;
     }
 
     [Function("addproduct")]
@@ -22,13 +25,24 @@ public class ProductTrigger
         {
             _logger.LogInformation("POST Add Product Endpoint Triggered.");
             var product = await req.ReadFromJsonAsync<Product>();
-
-            return new OkObjectResult(product);
+            if(product is null)
+            {
+                return new BadRequestResult();
+            }
+            var added = await _service.AddProduct(product);
+            if(added is true)
+            {
+                return new CreatedResult();
+            }
+            return new BadRequestResult();
         }
         catch (Exception ex)
         {
-
-            throw;
+            _logger.LogError(ex, "An Exception was Thrown.");
+            return new ObjectResult("An internal server error occurred.")
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
         }
     }
 
@@ -38,14 +52,16 @@ public class ProductTrigger
         try
         {
             _logger.LogInformation("GET Products Endpoint Triggered.");
-
+            var products = await _service.GetProductsAsync();
+            return new OkObjectResult(products);
         }
         catch (Exception ex)
         {
-
-            throw;
+            _logger.LogError(ex, "An Exception was Thrown.");
+            return new ObjectResult("An internal server error occurred.")
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
         }
-        _logger.LogInformation("C# HTTP trigger function processed a request.");
-        return new OkObjectResult("Welcome to Azure Functions!");
     }
 }
