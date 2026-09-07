@@ -27,10 +27,10 @@ public class ProductRepository : IProductRepository
                 _loggar.LogInformation("Product with Id : {id} already exists", entity.RowKey);
                 return false;
             }
-
+            
             var added = await _tableClient.AddEntityAsync(entity);
 
-            if (added.Status == 204)
+            if (added.IsError is false)
             {
                 _loggar.LogInformation("Product with {id} added successfully", entity.RowKey);
                 return true;
